@@ -26,11 +26,17 @@ public class ListViewFragment extends Fragment{
     ListView item_list;
     View itemView;
 
+    Communicator comm;
+
     List<Reminder> reminder_list = new ArrayList<Reminder>();
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //oncreateview is when the xml is to be made into images... or?
+
+        comm = (Communicator) getActivity();
+
 
         addReminders();
 
@@ -39,11 +45,28 @@ public class ListViewFragment extends Fragment{
 
         item_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                /** We want to make the list send the clicked listitem to the other
+                 * fragment
+                *** and then switch fragment with the data expanded into xml
+                **/
+
+                /**
+                *Det är fan item_list jag vill åt. AdapterView är ju ett view inte en datalista!
+                *
+                 */
+                //save the clicked reminder
+                Reminder currentReminder = reminder_list.get(position);
+                //then send it!
+                comm.send_reminder(currentReminder);
+
                 String toast_text = parent.getItemAtPosition(position).toString();
                 //parent is that list..
 
-                Toast.makeText(getActivity().getApplicationContext(), toast_text, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), toast_text, Toast.LENGTH_SHORT).show();
 
+                /** Problem med att få den att länka ordentligt. Jag har ju inte fragmenten på samma.
+                **
+                 */
 
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -55,6 +78,13 @@ public class ListViewFragment extends Fragment{
 
         return itemView;
     }
+
+    /*@Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+
+    }*/
 
     private void addReminders() {
         //will be replaced by user addable function
@@ -88,6 +118,7 @@ public class ListViewFragment extends Fragment{
             View itemView = convertView;
 
             if (itemView == null){
+                //layoutinflater inflater inflate inflate
                 itemView = getActivity().getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
 

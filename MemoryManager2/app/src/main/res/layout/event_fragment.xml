@@ -39,4 +39,32 @@
         android:layout_below="@+id/eventTextTime"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Type Text"
+        android:id="@+id/inputTextType"
+        android:layout_above="@+id/eventTextTime"
+        android:layout_toEndOf="@+id/eventTextTime" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Desc Text"
+        android:id="@+id/inputTextDesc"
+        android:layout_above="@+id/eventTextDesc"
+        android:layout_toEndOf="@+id/eventTextTime" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Time Text"
+        android:id="@+id/inputTextTime"
+        android:layout_alignTop="@+id/eventTextDesc"
+        android:layout_toEndOf="@+id/eventTextDesc" />
+
+
 </RelativeLayout>

@@ -6,9 +6,10 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements Communicator {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,4 +45,15 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+    //new code
+    @Override
+    public void send_reminder(Reminder reminder) {
+        Toast.makeText(this, "Running send_reminder", Toast.LENGTH_SHORT).show();
+        FragmentManager manager = getFragmentManager();
+        //ExpandListItemFragment expandFragment = (ExpandListItemFragment) manager.findFragmentById(R.id.expandFragment);
+
+        //hur kan jag skicka data till ett annat fragment utan att ha det i samma activity samtidigt???
+        //jag måste byta ut fragmenten...
+    }
+
 }
