@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:id="@+id/create_reminder_layout">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="New Reminder"
+        android:id="@+id/create_reminder_greeting"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Type:"
+        android:id="@+id/create_reminder_type"
+        android:layout_below="@+id/create_reminder_greeting"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/create_reminder_make_type"
+        android:layout_below="@+id/create_reminder_type"
+        android:layout_alignParentStart="true"
+        android:text="Say what Type here" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Description"
+        android:id="@+id/create_reminder_desc"
+        android:layout_below="@+id/create_reminder_make_type"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/create_reminder_make_desc"
+        android:layout_below="@+id/create_reminder_desc"
+        android:layout_alignParentStart="true"
+        android:text="Put your description here.." />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Time:"
+        android:id="@+id/create_reminder_time"
+        android:layout_below="@+id/create_reminder_make_desc"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/create_reminder_make_time"
+        android:layout_below="@+id/create_reminder_time"
+        android:layout_alignParentStart="true"
+        android:text="What time do you want this to trigger?" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Reminder"
+        android:id="@+id/create_reminder_add_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back To List"
+        android:id="@+id/back_to_list_btn"
+        android:layout_alignTop="@+id/create_reminder_add_button"
+        android:layout_alignEnd="@+id/create_reminder_greeting" />
+</RelativeLayout>

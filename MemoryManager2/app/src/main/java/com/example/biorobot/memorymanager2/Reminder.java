@@ -6,9 +6,9 @@ public class Reminder {
 
     private String type;
     private String description;
-    private double time;
+    private String time;
 
-    public Reminder(String type, String description, double time)
+    public Reminder(String type, String description, String time)
     {
         super();
         this.type = type;
@@ -16,11 +16,11 @@ public class Reminder {
         this.time = time;
     }
 
-    public double getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(double time) {
+    public void setTime(String time) {
         this.time = time;
     }
 

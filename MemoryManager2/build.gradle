@@ -5,7 +5,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.2'
+        classpath 'com.android.tools.build:gradle:1.0.0-rc4'
+        //compile fileTree(dir: 'libs', include: ['*.jar'])
+        //compile file('libs/AmazonInsights-android-sdk-2.1.26.jar')
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

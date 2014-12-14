@@ -2,18 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
 
-    android:id="@+id/list_view_layout">
+    android:id="@+id/list_view_layout"
+    android:weightSum="1">
 
-    <TextView android:text="All my Reminders" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
+
 
     <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_gravity = "top"
         android:id="@+id/eventListView"
-        android:layout_alignLeft="@id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content" android:layout_height="match_parent"
+
+        android:id="@+id/add_button_layout"
+        android:weightSum="1">
+
+        <Button
+            android:layout_width="104dp"
+            android:layout_height="wrap_content"
+            android:text="Add Reminder"
+            android:id="@+id/addReminderButton"
+            android:layout_gravity="bottom"
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
 
 </LinearLayout>
