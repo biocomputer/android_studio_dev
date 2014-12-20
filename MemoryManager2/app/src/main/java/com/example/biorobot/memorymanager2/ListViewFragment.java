@@ -42,14 +42,11 @@ public class ListViewFragment extends Fragment {
     public void getReminder(Reminder reminderGet) {
         Log.i("inside reminder", reminderGet.getType());
         reminder_list.add(reminderGet);
-
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i("creating new instance of fragment", "lstviewfragment");
-
         /**
          * list refresh
          */
@@ -66,7 +63,6 @@ public class ListViewFragment extends Fragment {
         if (createReminderButton != null) {
             Log.i("not null", "inside createReminder");
         }
-
         else {
             Log.i("null!", "inside else");
         }
@@ -80,7 +76,6 @@ public class ListViewFragment extends Fragment {
                 Log.i("BUTTONclicked!", "true");
                 AddReminderButtonCommunicator a = (AddReminderButtonCommunicator)getActivity();
                 a.onCreateReminderClicked();
-
             }
     });
 
@@ -93,13 +88,22 @@ public class ListViewFragment extends Fragment {
                 String toast_text = parent.getItemAtPosition(position).toString();
                 Toast.makeText(getActivity().getApplicationContext(), toast_text, Toast.LENGTH_LONG).show();
 
-                Event eventFragment = new Event();
-                getFragmentManager().beginTransaction().add(R.id.item_view_layout, eventFragment, "eventFragTag")
-                        .commit();
-                /**
-                 * doesn't remove the previous fragment to switch out..
-                 */
+                Log.i("inside ListViewFragment, ONITEMCLICK. position = ", position + "");
+                Log.i("===================================What's the Reminder value? ", reminder_list.get(position).getType());
 
+                /**
+                 * maybe make an event fragment ?? maybe..
+                 * noooo...
+                 */
+                Event eventFragment = new Event();
+
+                EventCommunicator eventComm = (EventCommunicator) getActivity();
+
+                /**
+                 * need to get activity maybe?
+                 */
+                Reminder ful_reminder = reminder_list.get(position);
+                eventComm.readReminder(ful_reminder);
             }
         });
 

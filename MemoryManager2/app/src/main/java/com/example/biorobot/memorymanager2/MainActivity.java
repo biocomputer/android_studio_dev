@@ -10,15 +10,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 //import com.amazon.insights.*;
 
 
-public class MainActivity extends Activity implements Communicator, AddReminderButtonCommunicator {
+public class MainActivity extends Activity implements Communicator, AddReminderButtonCommunicator, EventCommunicator{
     ListViewFragment fragmentListView;
     CreateReminderFragment fragmentCreateReminder;
+    Event fragmentEvent;
 
     FragmentManager fragmentManager;
 
@@ -27,10 +29,17 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /**
+         * segfaultar ändå.. varför..
+         */
+
         fragmentManager = getFragmentManager();
 
         //fragment variables defined before transaction this time
         fragmentListView = (ListViewFragment) fragmentManager.findFragmentById(R.id.list_view_layout);
+
+        //creating an eventFragment here since it works for listview fragment. This might solve the nullpointer exception.
+        fragmentEvent = (Event) fragmentManager.findFragmentById(R.id.event_layout);
 
         /**
          * Fragment fragmentA = new FragmentA();
@@ -49,9 +58,6 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
                 .commit();
 
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -86,6 +92,8 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         Log.i("What is pushThisReminder.getType() : ", pushThisReminder.getType().toString());
         this.fragmentListView.getReminder(pushThisReminder);
         Log.i("end of TRANSFER REMINDER", "reminder pushed?");
+
+        //popbackstack??
         getFragmentManager().popBackStack();
 
        // getFragmentManager().beginTransaction()
@@ -93,10 +101,27 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
          //       .commit();
 
     }
+    //eventCommunicator
+    public void readReminder(Reminder getReminder) {
+        Log.i("WE ARE INSIDE readReminder", "    ================= ");
+
+        Log.i("=!!==!=!=!!=!                ÖÖÖÖÖ   ", "===LOCAL REMINDER FROM READREMINDER ===");
+
+        fragmentEvent = new Event();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.main_layout, fragmentEvent, "eventFragTag")
+                .commit();
+
+        fragmentEvent.pullReminder(getReminder);
+        Log.i("after readReminder, what is tag for eventFragment? ", fragmentEvent.getTag());
+    }
 
     //AddReminderButtonCommunicator
     public void onCreateReminderClicked() {
-        //blah
+        //changes fragment from listview to the reminder creating fragment,
+        //this is not for looking at individual Reminders, that is for readReminder and
+        //the Event fragment class.
         Log.i("before createReminder Fragment", "okay");
         CreateReminderFragment reminderFragment = new CreateReminderFragment();
         fragmentManager.beginTransaction()

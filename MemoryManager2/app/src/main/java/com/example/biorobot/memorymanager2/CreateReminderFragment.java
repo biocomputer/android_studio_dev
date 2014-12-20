@@ -65,7 +65,6 @@ public class CreateReminderFragment extends Fragment {
         addReminderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("blah","blah");
                 Toast.makeText(getActivity(), "Your Contact has been created!", Toast.LENGTH_LONG).show();
                 /**
                  * TODO: Add checks here for data, if needed
@@ -74,9 +73,7 @@ public class CreateReminderFragment extends Fragment {
                 //is this actually pushing the reminder? Yes.
                 Communicator comm = (Communicator) getActivity();
                 comm.transferReminder(reminder);
-                //why doesn't it push the reminder, its empty when check. Hey man check this:
-                Log.i("hey is this reminder active, we are inside ONCLICKLISTENER: ", reminder.getType());
-                Log.i("it works!!!", "YAY");
+
             }
         });
         /**

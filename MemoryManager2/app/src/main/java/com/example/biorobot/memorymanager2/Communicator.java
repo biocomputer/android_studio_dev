@@ -8,4 +8,6 @@ public interface Communicator {
      * this is an interface
      */
     public void transferReminder(Reminder data);
+
+    //public void readRemidner(Reminder data);
 }
