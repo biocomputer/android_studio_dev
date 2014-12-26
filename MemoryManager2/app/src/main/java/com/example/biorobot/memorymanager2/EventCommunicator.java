@@ -7,4 +7,6 @@ package com.example.biorobot.memorymanager2;
 public interface EventCommunicator
 {
     public void readReminder(Reminder data);
+
+    public void returnReminder(Reminder data);
 }

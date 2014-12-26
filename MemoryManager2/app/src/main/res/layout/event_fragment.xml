@@ -26,7 +26,7 @@
             android:layout_marginTop="30dp"
             android:layout_gravity="center_horizontal" />
 
-        <TextView
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -43,7 +43,7 @@
             android:id="@+id/eventTextDesc"
             android:layout_gravity="center_horizontal" />
 
-        <TextView
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -60,13 +60,27 @@
             android:id="@+id/eventTextTime"
             android:layout_gravity="center_horizontal" />
 
-        <TextView
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Large Text"
             android:id="@+id/eventDataTime"
             android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Commit Changes"
+            android:id="@+id/pushChangeButton"
+            android:layout_gravity="right" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Just go Back"
+            android:id="@+id/backButton"
+            android:layout_gravity="right" />
 
 
     </LinearLayout>

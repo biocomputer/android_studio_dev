@@ -87,11 +87,7 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
 
     //Communicator
     public void transferReminder(Reminder pushThisReminder) {
-        Log.i("man we are inside TRANSFER REMINDER", "PUSHTHISREMINDER");
-
-        Log.i("What is pushThisReminder.getType() : ", pushThisReminder.getType().toString());
         this.fragmentListView.getReminder(pushThisReminder);
-        Log.i("end of TRANSFER REMINDER", "reminder pushed?");
 
         //popbackstack??
         getFragmentManager().popBackStack();
@@ -103,10 +99,6 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
     }
     //eventCommunicator
     public void readReminder(Reminder getReminder) {
-        Log.i("WE ARE INSIDE readReminder", "    ================= ");
-
-        Log.i("=!!==!=!=!!=!                ÖÖÖÖÖ   ", "===LOCAL REMINDER FROM READREMINDER ===");
-
         fragmentEvent = new Event();
 
         fragmentManager.beginTransaction()
@@ -114,7 +106,18 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
                 .commit();
 
         fragmentEvent.pullReminder(getReminder);
-        Log.i("after readReminder, what is tag for eventFragment? ", fragmentEvent.getTag());
+    }
+
+    public void returnReminder(Reminder pushReminder) {
+        Log.i("We are inside returnReminder", " GOGOGO ");
+
+        //position is now accessed locally.
+        this.fragmentListView.replaceReminder(pushReminder);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.main_layout, fragmentListView)
+                .addToBackStack(null)
+                .commit();
     }
 
     //AddReminderButtonCommunicator
@@ -122,13 +125,11 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         //changes fragment from listview to the reminder creating fragment,
         //this is not for looking at individual Reminders, that is for readReminder and
         //the Event fragment class.
-        Log.i("before createReminder Fragment", "okay");
         CreateReminderFragment reminderFragment = new CreateReminderFragment();
         fragmentManager.beginTransaction()
                 .replace(R.id.main_layout, reminderFragment, "createReminderFragTag")
                 .addToBackStack(null)
                 .commit();
-        Log.i("after createReminder, what is tag for reminderFragment? ", reminderFragment.getTag());
         //Log.i("after createReminder, what is tag for eventFragment? ", R.id.list_view_layout);
     }
 

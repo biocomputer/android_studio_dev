@@ -25,10 +25,18 @@ import java.util.List;
 
 
 public class ListViewFragment extends Fragment {
+    /**
+     * reassign list in savedInstanceState?
+     * or simply move it there?
+     */
     ListView item_list;
     View itemView;
     //make new reminder
     Button createReminderButton;
+
+    //saves position when user clicks on a listitem.
+    //assigned to zero just to be sure.
+    int mPosition = 0;
 
     List<Reminder> reminder_list = new ArrayList<Reminder>();
     Communicator comm;
@@ -36,6 +44,9 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        /**
+         * need to save communicator in saveinstancestate?
+         */
         comm = (Communicator) getActivity();
     }
 
@@ -43,70 +54,90 @@ public class ListViewFragment extends Fragment {
         Log.i("inside reminder", reminderGet.getType());
         reminder_list.add(reminderGet);
     }
+    public void replaceReminder(Reminder pushReminder) {
+        //"returns" a Reminder from the Event fragment by replacing the old one in the list
+        reminder_list.set(mPosition, pushReminder);
+
+        Log.i("inside replaceReminder. What's the reminder? ", reminder_list.get(mPosition).getType());
+    }
+
+    /**
+     * onSaveInstanceState to handle orientation changes
+     *
+     * All it needs to save is the reminder_list
+     *
+     * counter == reminder_list
+     */
+    @Override
+    public void onSaveInstanceState(Bundle saveData) {
+        super.onSaveInstanceState(saveData);
+        //Gonna need to overload this..
+        //saveData.putReminderArrayList("reminder_list", reminder_list);
+        /**
+         * overload saveData and make new function?
+         */
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            //data assignment?
+        }
+        else {
+            //data loading??
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("creating new instance of fragment", "lstviewfragment");
-        /**
-         * list refresh
-         */
-        if (item_list != null){
-            item_list.deferNotifyDataSetChanged();
-        }
-
-        itemView = inflater.inflate(R.layout.list_view_fragment, container, false);
-        createReminderButton = (Button) itemView.findViewById(R.id.addReminderButton);
-        Log.i("gets to addRemidners", "before");
-        //addReminders();
-        Log.i("gets after AddReminders", "after");
-
-        if (createReminderButton != null) {
-            Log.i("not null", "inside createReminder");
-        }
-        else {
-            Log.i("null!", "inside else");
-        }
-
-        createReminderButton.setOnClickListener(new View.OnClickListener() {
+        if (savedInstanceState == null)
+        {
+            List<Reminder> reminder_list = new ArrayList<Reminder>();
             /**
-             * this is the BUTTON
+             * list refresh
              */
-            @Override
-            public void onClick(View view) {
-                Log.i("BUTTONclicked!", "true");
-                AddReminderButtonCommunicator a = (AddReminderButtonCommunicator)getActivity();
-                a.onCreateReminderClicked();
+            if (item_list != null){
+                item_list.deferNotifyDataSetChanged();
             }
-    });
 
-        item_list = populateListView(itemView);
-        item_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                 /**
-                 * this is the LIST ITEM
-                 */
-                String toast_text = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getActivity().getApplicationContext(), toast_text, Toast.LENGTH_LONG).show();
+            itemView = inflater.inflate(R.layout.list_view_fragment, container, false);
+            createReminderButton = (Button) itemView.findViewById(R.id.addReminderButton);
 
-                Log.i("inside ListViewFragment, ONITEMCLICK. position = ", position + "");
-                Log.i("===================================What's the Reminder value? ", reminder_list.get(position).getType());
-
+            createReminderButton.setOnClickListener(new View.OnClickListener() {
                 /**
-                 * maybe make an event fragment ?? maybe..
-                 * noooo...
+                 * this is the BUTTON
                  */
-                Event eventFragment = new Event();
-
-                EventCommunicator eventComm = (EventCommunicator) getActivity();
-
-                /**
-                 * need to get activity maybe?
-                 */
-                Reminder ful_reminder = reminder_list.get(position);
-                eventComm.readReminder(ful_reminder);
-            }
+                @Override
+                public void onClick(View view) {
+                    Log.i("BUTTONclicked!", "true");
+                    AddReminderButtonCommunicator a = (AddReminderButtonCommunicator)getActivity();
+                    a.onCreateReminderClicked();
+                }
         });
 
+            item_list = populateListView(itemView);
+            item_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                     /**
+                     * this is the LIST ITEM
+                     */
+                    String toast_text = parent.getItemAtPosition(position).toString();
+                    Toast.makeText(getActivity().getApplicationContext(), toast_text, Toast.LENGTH_LONG).show();
+
+                    EventCommunicator eventComm = (EventCommunicator) getActivity();
+
+                    /**
+                     * need to get activity maybe?
+                     */
+                    Reminder ful_reminder = reminder_list.get(position);
+                    mPosition = position;
+                    Log.i("inside ListViewFragment onItemClick. Position == ", position + "");
+                    eventComm.readReminder(ful_reminder);
+                }
+            });
+
+        }
         return itemView;
     }
 
