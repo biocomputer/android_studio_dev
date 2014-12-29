@@ -53,10 +53,9 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         ListViewFragment listFragment = new ListViewFragment();
         //refers to the listFragment so it can be used seperately from the listFragment, which is pushed with the manager..
         this.fragmentListView = listFragment;
-        getFragmentManager().beginTransaction().add(R.id.main_layout, listFragment, "listFragTag")
+        getFragmentManager().beginTransaction().replace(R.id.main_layout, listFragment, "listFragTag")
                 //.addToBackStack("mainFragTag")
                 .commit();
-
     }
 
     @Override

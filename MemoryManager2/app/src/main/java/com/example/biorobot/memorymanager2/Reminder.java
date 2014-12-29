@@ -40,5 +40,8 @@ public class Reminder {
         this.type = type;
     }
 
-
+    @Override
+    public String toString() {
+        return type + " -- " + description + " -- " + time;
+    }
 }
