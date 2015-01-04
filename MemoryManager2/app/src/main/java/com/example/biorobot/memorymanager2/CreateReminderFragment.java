@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 /**
  * Created by biorobot on 2014-11-27.
- *
- * Total chaos inside here..
  */
 public class CreateReminderFragment extends Fragment {
 
@@ -32,7 +30,6 @@ public class CreateReminderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-
 
             Log.i("now inside creaRemidnerFragment", "LAUNCHED!");
             createReminderView = (View) inflater.inflate(R.layout.create_reminder_fragment, container, false);

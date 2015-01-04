@@ -72,11 +72,4 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back To List"
-        android:id="@+id/back_to_list_btn"
-        android:layout_alignTop="@+id/create_reminder_add_button"
-        android:layout_alignEnd="@+id/create_reminder_greeting" />
 </RelativeLayout>

@@ -16,7 +16,6 @@ import android.widget.Toast;
 public class Event extends Fragment {
 
     //textviews and inputs from the other data for linking with xml.
-    //will change variable names later..
 
     TextView eventDataType, eventDataDesc, eventDataTime;
     String inputType, inputDesc, inputTime;
@@ -26,7 +25,7 @@ public class Event extends Fragment {
     EventCommunicator commEvent;
 
     Button pushReminderButton;
-    Button leaveButton;
+    Button deleteReminderButton;
 
     View testView; //for testing how to add things..
 
@@ -79,6 +78,20 @@ public class Event extends Fragment {
                     //is this actually pushing the reminder? Yes.
                     //Communicator comm = (Communicator) getActivity();
                     commEvent.returnReminder(localReminder);
+
+                }
+            });
+            /**
+             * here is new functionality for deleting Reminders.
+             */
+            deleteReminderButton = (Button) testView.findViewById(R.id.deleteButton);
+            deleteReminderButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getActivity(), "You deleted a reminder!", Toast.LENGTH_LONG).show();
+
+                    commEvent.deleteReminder();
+
 
                 }
             });

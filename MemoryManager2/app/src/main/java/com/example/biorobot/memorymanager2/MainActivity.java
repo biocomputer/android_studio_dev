@@ -29,10 +29,6 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /**
-         * segfaultar ändå.. varför..
-         */
-
         fragmentManager = getFragmentManager();
 
         //fragment variables defined before transaction this time
@@ -88,13 +84,6 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
     public void transferReminder(Reminder pushThisReminder) {
         this.fragmentListView.getReminder(pushThisReminder);
 
-        //popbackstack??
-        getFragmentManager().popBackStack();
-
-       // getFragmentManager().beginTransaction()
-         //       .add(R.id.item_view_layout,this.fragmentListView,"listFragTag")
-         //       .commit();
-
     }
     //eventCommunicator
     public void readReminder(Reminder getReminder) {
@@ -102,6 +91,7 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
 
         fragmentManager.beginTransaction()
                 .replace(R.id.main_layout, fragmentEvent, "eventFragTag")
+                .addToBackStack(null)
                 .commit();
 
         fragmentEvent.pullReminder(getReminder);
@@ -117,6 +107,20 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
                 .replace(R.id.main_layout, fragmentListView)
                 .addToBackStack(null)
                 .commit();
+    }
+    public void deleteReminder() {
+        /**
+         * need to search in list for item to delete? doesn't it remember the list position?
+         * it's possible to change so should be highly possible to delete, just do .delete(pos)
+         * instead of .change(pos);
+         */
+        Log.i("inside ", "deleteReminder");
+        this.fragmentListView.removeReminder();
+        fragmentManager.beginTransaction()
+                .replace(R.id.main_layout, fragmentListView)
+                .addToBackStack(null)
+                .commit();
+
     }
 
     //AddReminderButtonCommunicator

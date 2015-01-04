@@ -28,7 +28,6 @@ import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ListViewFragment extends Fragment {
     /**
      * reassign list in savedInstanceState?
@@ -67,128 +66,51 @@ public class ListViewFragment extends Fragment {
 
         Log.i("inside replaceReminder. What's the reminder? ", reminder_list.get(mPosition).getType());
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("Inside onResume", "RESUME");
-        try
-        {
-            // kolla så listan finns, annars skapa om den
-            if(reminder_list != null) {
-                //reminder_list.clear();
-            }
-            else {
-                reminder_list = new ArrayList<Reminder>();
-            }
-            // läs in reminders
-            ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
-            SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-            // kolumner som vi vill ha värdet på
-            String [] projection = {
-                    ReminderEntry.COLUMN_NAME_TYPE,
-                    ReminderEntry.COLUMN_NAME_DESCRIPTION,
-                    ReminderEntry.COLUMN_NAME_TIME,
-                    ReminderEntry.COLUMN_NAME_REMINDER_ID
-            };
-
-            // reminder position i stigande ordning (ASCENDING)
-            String sortOrder =
-                    ReminderEntry.COLUMN_NAME_REMINDER_ID + " ASC";
-
-            Cursor c = db.query(
-                    ReminderEntry.TABLE_NAME,
-                    projection,
-                    null,
-                    null,
-                    null,
-                    null,
-                    sortOrder
-            );
-
-            if(c.moveToFirst())
-            {
-                do {
-                    int typeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TYPE);
-                    String type = c.getString(typeColIndex);
-
-                    int descColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_DESCRIPTION);
-                    String desc = c.getString(descColIndex);
-
-                    int timeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TIME);
-                    String time = c.getString(timeColIndex);
-
-                    Reminder r = new Reminder(type,desc,time);
-
-                    //fullösning för reminder check så den inte multiplicerar listan hela tiden
-                    /**
-                     * TODO: Add id to reminder so we can see which reminder is where and it doesn't
-                     * add new reminder for no reason.
-                     */
-                    int reminderIdColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_REMINDER_ID);
-
-                    //cursor gets the id from the database.
-                    int reminderID = c.getInt(reminderIdColIndex);
-
-                    /**
-                     * databasen har ett skiljeid för att identifiera varje rad unik. Kallas nyckel i databas
-                     * men det finns inte i gränssnittet i appen, så den bara pushar på varje gång utan att veta.
-                     */
-
-                    // lägg till remindern så den dyker upp i gränssnittet
-                    //första reminder har id 1, sen 2 3 4 5, den kommer kolla så den inte pushar id som inte finns.
-                    if (reminderID >= reminder_list.size()) {
-                        //ett och två finns i listan, vi har redan i listan så den pushar inte igen.
-                        /**
-                         * funkar!!! är en fullösning dock! Ändra sen!.
-                         *
-                         * För att ändra om det här till en snygglösning. Ändra så att Reminder klassen innehåller Reminder id.
-                         * Problemet är att då när man skapar en ny Reminder, så vet vi inte vilken Reminder som finns i databasen.
-                         *
-                         *
-                         * För det här ändamålet: den här lösningen funkar. Men den kommer ställa till problem om man måste ta bort grejor.
-                         *
-                         */
-                        reminder_list.add(r);
-                    }
-                    //hur vet vi att en reminder vi vill ha inte redan finns i listan?
-                    //vi behöver ha en unik skiljebrytare.
-                    //ful lösning först
-                    //item_list.deferNotifyDataSetChanged();
-                } while(c.moveToNext()); //medan vi har rader kvar i cursorn
-
-                c.close();
-                // fortsätt till nästa rad
-            }
-        } catch (Exception e) {
-            Log.e("ListViewFragment_OnResume", e.getMessage());
-        }
-
+    public void removeReminder() {
+        //deletes the reminder at position
+        reminder_list.remove(mPosition);
+        Log.i("inside removeReminder", "removed reminder at position: " + mPosition+"");
+        //need to do this still even as we now have SQL database?
+        item_list.deferNotifyDataSetChanged();
+        //doesn't remove the listview item. its still an empty lisview item.
+        //needs to remove from database too.
+        ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        db.execSQL("DELETE FROM Reminder WHERE reminderid = " + mPosition);
     }
 
     @Override
     public void onPause() {
+        /**
+         * Inside here is the database runtime logic.
+         */
+        //super runs the original unedited class onPause() first, then we can run our special override code
         super.onPause();
         Log.i("Inside onPause", "PAUSE");
-        // spara reminders i databasen
+        //save those reminders in the database onPause so the app doesn't wipe the data onquit.
+        //data now lives on even if the app is shut down. Data also lives on for new versions of the app..
         ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
+        //create a reference to the database object..
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        db.execSQL("DELETE FROM Reminder;");
+        //deletes all records there are, but keeps the table ?? or?
+        //cleans out the old database, and resaves it all again
+        //
+        //
 
-        for(int x = 0;x< reminder_list.size(); x++) {
+        db.execSQL("DELETE FROM Reminder;");
+        /**
+         * need to do this since we don't have a unique constraint. Otherwise the old Reminders would
+         * not be able to be stored back into the database.
+         *
+         */
+
+        //now we add all new reminders from the temporary list.
+        for(int x = 0; x < reminder_list.size(); x++) {
             /**
-             * perhaps it is this that makes the listitems double on every new add.
-             * it runs through the code for each listitem, of course if you do it like that
-             * it will double every time.
-             *
-             * Why is there even a loop here? Couldn't this be done just straight?
-             *
-             * Or it's to recreate a dead list?
-             *
-             *
+             * Log everything in DB now that the old database is cleansed
              */
+            //get reminder from the list, and divide up it's data for pushing to the database.
             Reminder r = reminder_list.get(x);
             ContentValues values = new ContentValues();
             values.put(ReminderEntry.COLUMN_NAME_REMINDER_ID, x);
@@ -205,6 +127,110 @@ public class ListViewFragment extends Fragment {
                 Log.e("reminder_save", e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("Inside onResume", "RESUME");
+        try
+        {
+            //don't need to wipe the list
+            if(reminder_list != null) {
+                //reminder_list.clear();
+            }
+            else {
+                reminder_list = new ArrayList<Reminder>();
+            }
+            //Database needs to be onResume so it can load up the saved data.
+            ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
+            //helper is the definition of the structure of the database..
+            SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+            //defines which columns are read from the database.
+            //all columns are currently set to be read. This is formality to work with a database.
+            /**
+             * An alternative is
+             */
+            String [] projection = {
+                    ReminderEntry.COLUMN_NAME_TYPE,
+                    ReminderEntry.COLUMN_NAME_DESCRIPTION,
+                    ReminderEntry.COLUMN_NAME_TIME,
+                    ReminderEntry.COLUMN_NAME_REMINDER_ID
+            };
+
+            // reminder position in ascending order
+            String sortOrder =
+                    ReminderEntry.COLUMN_NAME_REMINDER_ID + " ASC";
+
+            //the query will look as such: SELECT type, description, time, reminderid FROM Reminder
+            //ORDER BY reminderid ASC
+            Cursor c = db.query(
+                    ReminderEntry.TABLE_NAME,
+                    projection,
+                    null,
+                    null,
+                    null,
+                    null,
+                    sortOrder
+            );
+
+            //move cursor to the first row..
+            //cursor is like an iterator for
+            if(c.moveToFirst())
+            {
+                do {
+                    //gets data from the database at the cursor location.
+                    int typeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TYPE);
+                    String type = c.getString(typeColIndex);
+
+                    int descColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_DESCRIPTION);
+                    String desc = c.getString(descColIndex);
+
+                    int timeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TIME);
+                    String time = c.getString(timeColIndex);
+
+                    Reminder r = new Reminder(type,desc,time);
+
+
+                    int reminderIdColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_REMINDER_ID);
+
+                    /**
+                     * TODO: Add id to reminder so we can see which reminder is where and it doesn't
+                     * add new reminder for no reason.
+                     */
+                    //cursor gets the id from the database. Id used formally to identify Reminders in the database.
+                    //Next up is to add as value in the Reminder.java class?
+                    int reminderID = c.getInt(reminderIdColIndex);
+
+                    /**
+                     * The database has a id for every row, called key. Doesn't exist in the UI
+                     */
+
+                    //reminders have ID 1 2 3 4 depending on position in list. We don't want reminders that are
+                    //not in the list, so check for reminders that are not ID larger than the list.size()
+                    if (reminderID >= reminder_list.size()) {
+                        /**
+                         * An alternative solution is to have an ID integer value in the Reminder class.
+                         * Now the ID is in the database. Everything works nice now however so maybe not needed.
+                         */
+                        reminder_list.add(r);
+                    }
+                    /**
+                     * How do we know that we want a reminder which is not already in the list?
+                     * we need a unique "divider"
+                     */
+                    //don't need this.. it didn't do anything.. delete?
+                    //item_list.deferNotifyDataSetChanged();
+                } while(c.moveToNext()); //runs while there are rows in the cursor..
+
+                c.close();
+                // coninute to the next row
+            }
+        } catch (Exception e) {
+            Log.e("ListViewFragment_OnResume", e.getMessage());
+        }
+
     }
 
     /**
@@ -269,7 +295,6 @@ public class ListViewFragment extends Fragment {
                         ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
                         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-                        //sends query?
                         db.execSQL("DELETE FROM Reminder;");
                         reminder_list.clear();
                         /**
@@ -294,6 +319,7 @@ public class ListViewFragment extends Fragment {
                     String toast_text = parent.getItemAtPosition(position).toString();
                     Toast.makeText(getActivity().getApplicationContext(), toast_text, Toast.LENGTH_LONG).show();
 
+                    Log.v("inside ListViewFragment onItemClick. Position == ", position + "");
                     EventCommunicator eventComm = (EventCommunicator) getActivity();
 
                     /**
@@ -301,7 +327,6 @@ public class ListViewFragment extends Fragment {
                      */
                     Reminder ful_reminder = reminder_list.get(position);
                     mPosition = position;
-                    Log.i("inside ListViewFragment onItemClick. Position == ", position + "");
                     eventComm.readReminder(ful_reminder);
                 }
             });
