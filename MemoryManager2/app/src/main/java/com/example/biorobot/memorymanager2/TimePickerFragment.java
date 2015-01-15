@@ -17,13 +17,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     private int hourOfDay;
     private int minute;
-    /**
-         * fucking static piece of shit won't work. Either it is red on static or red on the implements...
-         *
-         * 'modifier static won't work here' why not?
-         * It needs to be static so it's callable from outside making a class object and writing
-         * timePicker.OnTimeSetListener ???
-         */
+
 
 
     @Override

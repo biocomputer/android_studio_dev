@@ -86,11 +86,6 @@ public class Event extends Fragment {
             //always segfaults onClick for listItem. Okay it's because of time assignment is changed to
             //The TimePicker rather than the EditText field.
 
-            /**
-             * Ok now instead the database gets messed up. New bug introduced.
-             * It used to be able to
-             */
-
             //Nope that didn't work. It gets rescource not found exception all the time..
 
             pushReminderButton = (Button) testView.findViewById(R.id.pushChangeButton);
