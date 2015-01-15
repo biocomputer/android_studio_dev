@@ -70,6 +70,14 @@
             android:id="@+id/eventDataTime"
             android:layout_gravity="center_horizontal" />
 
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm"
+            android:id="@+id/eventDataAlarm"
+            android:checked="false"
+            android:layout_gravity="center_horizontal" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,9 +1,13 @@
 package com.example.biorobot.memorymanager2;
 
+import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -26,6 +30,7 @@ import com.example.biorobot.memorymanager2.ReminderContract.ReminderEntry;
 
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class ListViewFragment extends Fragment {
@@ -57,6 +62,44 @@ public class ListViewFragment extends Fragment {
     }
 
     public void getReminder(Reminder reminderGet) {
+        if (reminderGet.isDoSetAlarm() == true) {
+            /**
+             * problem now is that the reminder needs value input in amount of seconds rather than a certain clock time.
+             */
+            Log.i("inside getReminder on listView side: -- :", "isDoSetAlarm is TRUE!");
+            Long time = new GregorianCalendar().getTimeInMillis() + reminderGet.getTime() * 1000;
+            Log.i("yo man get that time? ", time + "");
+            // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
+            // specified AlarmReceiver in the Intent. The onReceive() method of this class will execute when the broadcast from your alarm is received.
+            Intent intentAlarm = new Intent(getActivity(), Alarm.class);
+            /**
+             * refactor all this into onCreateView?
+             */
+
+            /**
+             * TODO: Fix up the bool isDoSetAlarm so it's not always false..
+             */
+
+            // Get the Alarm Service.
+            AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+
+            // Set the alarm for a particular time.
+            alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(getActivity(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+            Toast.makeText(getActivity(), "5 seconds..", Toast.LENGTH_LONG).show();
+
+            /**
+             * can't make toasts and data changes in here? it's not a fragment or? it should trigger on listview fragment, or is this some kind of
+             * it's wiped every time?
+             *
+             * It should wipe everything that isn't saved in here every time??
+             */
+            /**
+             * TODO: use alarmManager here to set alarm with intent.
+             */
+        }
+        else {
+            Log.i("inside getReminder communicator on the listView Side\n", "no alarm set!");
+        }
         Log.i("inside reminder", reminderGet.getType());
         reminder_list.add(reminderGet);
     }
@@ -117,6 +160,7 @@ public class ListViewFragment extends Fragment {
             values.put(ReminderEntry.COLUMN_NAME_TYPE, r.getType());
             values.put(ReminderEntry.COLUMN_NAME_DESCRIPTION, r.getDescription());
             values.put(ReminderEntry.COLUMN_NAME_TIME, r.getTime());
+            values.put(ReminderEntry.COLUMN_NAME_ALARM, r.isDoSetAlarm());
             try {
                 db.insert(
                         ReminderEntry.TABLE_NAME,
@@ -135,7 +179,6 @@ public class ListViewFragment extends Fragment {
         Log.i("Inside onResume", "RESUME");
         try
         {
-            //don't need to wipe the list
             if(reminder_list != null) {
                 //reminder_list.clear();
             }
@@ -156,7 +199,8 @@ public class ListViewFragment extends Fragment {
                     ReminderEntry.COLUMN_NAME_TYPE,
                     ReminderEntry.COLUMN_NAME_DESCRIPTION,
                     ReminderEntry.COLUMN_NAME_TIME,
-                    ReminderEntry.COLUMN_NAME_REMINDER_ID
+                    ReminderEntry.COLUMN_NAME_REMINDER_ID,
+                    ReminderEntry.COLUMN_NAME_ALARM
             };
 
             // reminder position in ascending order
@@ -186,11 +230,43 @@ public class ListViewFragment extends Fragment {
 
                     int descColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_DESCRIPTION);
                     String desc = c.getString(descColIndex);
+                    /**
+                     * there's problems here..
+                     * time variable is wrong and alarm too!
+                     * It saves desc properly.
+                     *
+                     * Maybe time isn't saved properly but it's more probable that
+                     * it doesn't load properly?
+                     */
 
                     int timeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TIME);
-                    String time = c.getString(timeColIndex);
+                    //this was c.getString before but now we need int.
+                    int time = c.getInt(timeColIndex);
 
-                    Reminder r = new Reminder(type,desc,time);
+                    int alarmColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_ALARM);
+                    //need to save as int 0 or 1? and then translate?
+                    /**
+                     * Alarm runs for -1 here in debug? Alarm was set to on i think..
+                     */
+                    int valueAlarm = c.getInt(alarmColIndex);
+                    //just default to false.
+                    boolean alarm = false;
+
+                    if (valueAlarm == 0) {
+                        alarm = false;
+                    }
+                    else if (valueAlarm == 1) {
+                        alarm = true;
+                    }
+                    else if (valueAlarm == -1) {
+                        Log.e("inside cursor in listViewFragment.", "FATAL: alarm == -1 error");
+
+                    }
+                    else {
+                        Log.e("listView cursor for alarm is wrong! valueAlarm = ", valueAlarm + "");
+                    }
+
+                    Reminder r = new Reminder(type,desc,time,alarm);
 
 
                     int reminderIdColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_REMINDER_ID);
@@ -263,7 +339,7 @@ public class ListViewFragment extends Fragment {
             /**
              * list refresh
              */
-            if (item_list != null){
+            if (item_list != null) {
                 /**
                  * just crap, does nothing..
                  */
@@ -335,13 +411,6 @@ public class ListViewFragment extends Fragment {
         return itemView;
     }
 
-    private void addReminders() {
-        reminder_list.add(new Reminder("Lunch", "Eat Lunch", "12.00"));
-        reminder_list.add(new Reminder("Walk", "Take a late walk..", "20.40"));
-        reminder_list.add(new Reminder("Early Train", "Get on the early train in time!", "4.20"));
-        reminder_list.add(new Reminder("Gym", "go to the Gym!", "15.5"));
-        reminder_list.add(new Reminder("Present", "Buy present for wife", "15.55"));
-    }
     /**
      * this class is for pushing every generated item xml to the list..
      */

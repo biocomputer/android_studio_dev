@@ -1,28 +1,39 @@
 package com.example.biorobot.memorymanager2;
 
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 public class Reminder {
 
 
     private String type;
     private String description;
-    private String time;
 
-    public Reminder(String type, String description, String time)
+    private int time;
+
+    //do set alarm is the checkbox
+    private boolean doSetAlarm;
+    //for internal use in the reminder
+    private int reminderID;
+
+    public Reminder(String type, String description, int time, boolean isAlarm)
     {
         super();
         this.type = type;
         this.description = description;
         this.time = time;
+        this.setDoSetAlarm(isAlarm);
+        //default -1 for error message
+        this.setReminderID(-1);
     }
 
-    public String getTime() {
-        return time;
-    }
 
-    public void setTime(String time) {
+    public void setTime(int time) {
         this.time = time;
     }
+
+    public int getTime() { return time;}
 
     public String getDescription() {
         return description;
@@ -43,5 +54,21 @@ public class Reminder {
     @Override
     public String toString() {
         return type + " -- " + description + " -- " + time;
+    }
+
+    public boolean isDoSetAlarm() {
+        return doSetAlarm;
+    }
+
+    public void setDoSetAlarm(boolean doSetAlarm) {
+        this.doSetAlarm = doSetAlarm;
+    }
+
+    public int getReminderID() {
+        return reminderID;
+    }
+
+    public void setReminderID(int reminderID) {
+        this.reminderID = reminderID;
     }
 }

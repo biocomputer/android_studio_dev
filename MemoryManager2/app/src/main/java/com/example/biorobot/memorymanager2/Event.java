@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,10 @@ public class Event extends Fragment {
     //textviews and inputs from the other data for linking with xml.
 
     TextView eventDataType, eventDataDesc, eventDataTime;
+
+    //new for alarm build!
+    CheckBox eventDataAlarm;
+
     String inputType, inputDesc, inputTime;
 
     Reminder localReminder;
@@ -61,10 +66,32 @@ public class Event extends Fragment {
             eventDataType = (TextView) testView.findViewById(R.id.eventDataType);
             eventDataDesc = (TextView) testView.findViewById(R.id.eventDataDesc);
             eventDataTime = (TextView) testView.findViewById(R.id.eventDataTime);
+            eventDataAlarm = (CheckBox) testView.findViewById(R.id.eventDataAlarm);
 
             eventDataType.setText(localReminder.getType());
             eventDataDesc.setText(localReminder.getDescription());
-            eventDataTime.setText(localReminder.getTime());
+            //if this is nothing then there's a problem since it is now an int rather than string
+            //strings can be empty but integers can't.
+            //thus it generates a Rescource not found exception
+
+            //it needs, however, to be fixed when the Reminder is created in the create fragment.
+            //Apparently it can assign without a problem but cannot read it .toString()
+            Log.i("inside Event onCreateView. reminder.time()... is = ", Integer.toString(localReminder.getTime()) + "");
+             //can't even Log.i the whole expression since it always will evaluate to null.. ?
+            String tempDataTime = Integer.toString(localReminder.getTime());
+
+            //eventDataTime.setText(localReminder.getTime());
+            eventDataTime.setText(tempDataTime);
+            //actually it always assigns emtpy?
+            //always segfaults onClick for listItem. Okay it's because of time assignment is changed to
+            //The TimePicker rather than the EditText field.
+
+            /**
+             * Ok now instead the database gets messed up. New bug introduced.
+             * It used to be able to
+             */
+
+            //Nope that didn't work. It gets rescource not found exception all the time..
 
             pushReminderButton = (Button) testView.findViewById(R.id.pushChangeButton);
 
@@ -73,8 +100,13 @@ public class Event extends Fragment {
                 public void onClick(View view) {
                     Toast.makeText(getActivity(), "You changed reminder!", Toast.LENGTH_LONG).show();
 
-                    //reassigns the local reminder to be sent back.
-                    localReminder = new Reminder(eventDataType.getText().toString().trim(), eventDataDesc.getText().toString().trim(), eventDataTime.getText().toString().trim());
+                    //reassigns the local reminder to be sent back
+                    localReminder = new Reminder(
+                            eventDataType.getText().toString().trim(),
+                            eventDataDesc.getText().toString().trim(),
+                            Integer.parseInt(eventDataTime.getText().toString().trim()),
+                            eventDataAlarm.isChecked()
+                    );
                     //is this actually pushing the reminder? Yes.
                     //Communicator comm = (Communicator) getActivity();
                     commEvent.returnReminder(localReminder);

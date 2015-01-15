@@ -59,6 +59,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="number"
         android:id="@+id/create_reminder_make_time"
         android:layout_below="@+id/create_reminder_time"
         android:layout_alignParentStart="true"
@@ -70,6 +71,25 @@
         android:text="Add Reminder"
         android:id="@+id/create_reminder_add_button"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alarm?"
+        android:id="@+id/create_reminder_alarm"
+        android:checked="false"
+        android:layout_below="@+id/create_reminder_time_button"
+        android:layout_alignEnd="@+id/create_reminder_desc"
+        android:layout_marginTop="43dp" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TimeFixer"
+        android:id="@+id/create_reminder_time_button"
+        android:layout_below="@+id/create_reminder_make_time"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>

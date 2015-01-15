@@ -14,7 +14,8 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-//import com.amazon.insights.*;
+import com.amazon.insights.*;
+import com.amazon.insights.error.InsightsError;
 
 
 public class MainActivity extends Activity implements Communicator, AddReminderButtonCommunicator, EventCommunicator{
@@ -23,6 +24,19 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
     Event fragmentEvent;
 
     FragmentManager fragmentManager;
+
+    // see https://developer.amazon.com/public/apis/manage/ab-testing/doc/a-b-testing-for-android-fire-os
+    // for more information
+
+            //this is for SSHing to the webserver?
+    public static final String AMAZON_PUBLIC_KEY = "43987f10f024480c8f6447607cf58b26";
+    public static final String AMAZON_PRIVATE_KEY = "/TzvGgh+o0n69l93goJWmgorbEAzzQnaaYUI40AxxJs=";
+
+    private ABTestClient abClient;
+    private EventClient eventClient;
+
+
+    private int ABTestLayoutMode = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +60,66 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
          * list:
          * List<Fragment> allFragments = getSupportFragmentManager().getFragments();
          */
+
+        //A/B Testing
+
+        InsightsCredentials credentials = AmazonInsights.newCredentials(AMAZON_PUBLIC_KEY, AMAZON_PRIVATE_KEY);
+        InsightsOptions options = AmazonInsights.newOptions(true, true);
+        AmazonInsights insightsInstance = AmazonInsights.newInstance(credentials, getApplicationContext(),options);
+        abClient = insightsInstance.getABTestClient();
+        eventClient = insightsInstance.getEventClient();
+
         ListViewFragment listFragment = new ListViewFragment();
         //refers to the listFragment so it can be used seperately from the listFragment, which is pushed with the manager..
-        this.fragmentListView = listFragment;
+        fragmentListView = listFragment;
         getFragmentManager().beginTransaction().replace(R.id.main_layout, listFragment, "listFragTag")
                 //.addToBackStack("mainFragTag")
                 .commit();
+
+
+        /**
+         * here is more amazon AB test framework code
+         */
+        abClient.getVariations("MemoryManager")
+                .setCallback(new InsightsCallback<VariationSet>() {
+                    @Override
+                    public void onComplete(VariationSet variations) {
+                        try {
+
+                            final Variation createReminderVariation = variations.getVariation("MemoryManager");
+                            if(createReminderVariation.containsVariable("ReminderGroup")) {
+                               String reminderGroup = createReminderVariation.getVariableAsString("ReminderGroup", "1.0");
+                                ABTestLayoutMode = (int)Double.parseDouble(reminderGroup);
+                            }
+                            //final int layoutMode = Integer.parseInt(createReminderVariation.getVariableAsString("ReminderGroup","1.0"));
+                            //ABTestLayoutMode = layoutMode;
+                            Log.i("Got Layout From Amazon: ", Integer.toString(ABTestLayoutMode));
+                        } catch(Exception ex) {
+                            Log.e("Amazon.Insight.Callback", ex.getMessage());
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(InsightsError error) {
+                        super.onError(error);
+                        Log.e("InsightsCallback.OnError", "Error from amazon\n" + error.getMessage());
+                    }
+                });
+
+        // Visit event starts the AB Test
+        com.amazon.insights.Event abTestStart = eventClient.createEvent("buttonTextStart");
+
+        eventClient.recordEvent(abTestStart);
+
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        eventClient.submitEvents();
     }
 
     @Override
@@ -83,6 +151,9 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
     //Communicator
     public void transferReminder(Reminder pushThisReminder) {
         this.fragmentListView.getReminder(pushThisReminder);
+        com.amazon.insights.Event reminderCreatedEvent = eventClient.createEvent("reminderCreated");
+        eventClient.recordEvent(reminderCreatedEvent);
+
 
     }
     //eventCommunicator
@@ -129,6 +200,7 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         //this is not for looking at individual Reminders, that is for readReminder and
         //the Event fragment class.
         CreateReminderFragment reminderFragment = new CreateReminderFragment();
+        reminderFragment.ABLayoutMode = ABTestLayoutMode;
         fragmentManager.beginTransaction()
                 .replace(R.id.main_layout, reminderFragment, "createReminderFragTag")
                 .addToBackStack(null)
