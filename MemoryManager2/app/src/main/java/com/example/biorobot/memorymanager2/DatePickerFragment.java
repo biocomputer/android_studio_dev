@@ -13,7 +13,7 @@ import java.util.Calendar;
  */
 
 /**
- * modify class cause ...
+ * helper class
  */
 
 public class DatePickerFragment extends DialogFragment
