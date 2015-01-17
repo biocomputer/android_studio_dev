@@ -1,5 +1,6 @@
 package com.example.biorobot.memorymanager2;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -14,11 +15,13 @@ import java.util.Calendar;
  */
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+    /**
+     * this is outside of the
+     * reminder and events and database??
+     */
 
     private int hourOfDay;
     private int minute;
-
-
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -26,6 +29,9 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
+        /**
+         * date?? in DateTimePicker?
+         */
 
         // Create a new instance of TimePickerDialog and return it
         return new TimePickerDialog(getActivity(), this, hour, minute,
@@ -36,6 +42,10 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         // Do something with the time chosen by the user
         setHourOfDay(hourOfDay);
         setMinute(minute);
+        if(this.getActivity() != null) {
+            MainActivity activity = (MainActivity) this.getActivity();
+            activity.onTimeSet(view, hourOfDay, minute);
+        }
     }
 
     public int getHourOfDay() {

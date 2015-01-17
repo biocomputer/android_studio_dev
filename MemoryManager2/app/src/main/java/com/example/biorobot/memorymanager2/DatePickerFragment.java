@@ -13,9 +13,10 @@ import java.util.Calendar;
  */
 
 /**
- * from developer.android DELETE THIS
+ * modify class cause ...
  */
-public /*static*/ class DatePickerFragment extends DialogFragment
+
+public class DatePickerFragment extends DialogFragment
     implements DatePickerDialog.OnDateSetListener {
 
     @Override
@@ -32,5 +33,9 @@ public /*static*/ class DatePickerFragment extends DialogFragment
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
+        if(this.getActivity() != null) {
+            MainActivity activity = (MainActivity) this.getActivity();
+            activity.onDateSet(view, year, month, day);
+        }
     }
 }

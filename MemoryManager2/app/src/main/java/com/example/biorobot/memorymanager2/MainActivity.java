@@ -12,15 +12,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import com.amazon.insights.*;
 import com.amazon.insights.error.InsightsError;
 
 
-public class MainActivity extends Activity implements Communicator, AddReminderButtonCommunicator, EventCommunicator{
+public class MainActivity extends Activity implements Communicator,
+        AddReminderButtonCommunicator, EventCommunicator,
+        OnTimeSetCommunicator, OnDateSetCommunicator {
     ListViewFragment fragmentListView;
-    CreateReminderFragment fragmentCreateReminder;
+    CreateReminderFragment currentCreateReminderFragment;
     Event fragmentEvent;
 
     FragmentManager fragmentManager;
@@ -154,6 +158,7 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         com.amazon.insights.Event reminderCreatedEvent = eventClient.createEvent("reminderCreated");
         eventClient.recordEvent(reminderCreatedEvent);
 
+        fragmentManager.popBackStack();
 
     }
     //eventCommunicator
@@ -200,6 +205,7 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         //this is not for looking at individual Reminders, that is for readReminder and
         //the Event fragment class.
         CreateReminderFragment reminderFragment = new CreateReminderFragment();
+        currentCreateReminderFragment = reminderFragment;
         reminderFragment.ABLayoutMode = ABTestLayoutMode;
         fragmentManager.beginTransaction()
                 .replace(R.id.main_layout, reminderFragment, "createReminderFragTag")
@@ -208,4 +214,17 @@ public class MainActivity extends Activity implements Communicator, AddReminderB
         //Log.i("after createReminder, what is tag for eventFragment? ", R.id.list_view_layout);
     }
 
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        if(currentCreateReminderFragment != null) {
+            currentCreateReminderFragment.updateTime(hourOfDay, minute);
+        }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int day) {
+        if(currentCreateReminderFragment != null) {
+            currentCreateReminderFragment.updateDate(year,month,day);
+        }
+    }
 }

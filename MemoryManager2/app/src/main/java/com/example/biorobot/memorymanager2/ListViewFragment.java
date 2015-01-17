@@ -67,6 +67,9 @@ public class ListViewFragment extends Fragment {
              * problem now is that the reminder needs value input in amount of seconds rather than a certain clock time.
              */
             Log.i("inside getReminder on listView side: -- :", "isDoSetAlarm is TRUE!");
+            /**
+             * this needs to link to the DatePicker and TimePicker instead of an int value.
+             */
             Long time = new GregorianCalendar().getTimeInMillis() + reminderGet.getTime() * 1000;
             Log.i("yo man get that time? ", time + "");
             // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
@@ -136,16 +139,10 @@ public class ListViewFragment extends Fragment {
         //create a reference to the database object..
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        //deletes all records there are, but keeps the table ?? or?
-        //cleans out the old database, and resaves it all again
-        //
-        //
-
         db.execSQL("DELETE FROM Reminder;");
         /**
          * need to do this since we don't have a unique constraint. Otherwise the old Reminders would
          * not be able to be stored back into the database.
-         *
          */
 
         //now we add all new reminders from the temporary list.
@@ -219,8 +216,6 @@ public class ListViewFragment extends Fragment {
                     sortOrder
             );
 
-            //move cursor to the first row..
-            //cursor is like an iterator for
             if(c.moveToFirst())
             {
                 do {
@@ -423,9 +418,17 @@ public class ListViewFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
 
-            if (itemView == null){
+            if (itemView == null) {
                 itemView = getActivity().getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
+            /**
+             * need to change it up so time now contains actual time, like a time object
+             * and this can of course be converted to String and then added as timeText.setText
+             * (currentReminder.getRealTimeObject().toString() where toString is Override or something
+             * or just + ""
+             *
+             * also time object needs to work properly.. or does it already do that?
+             */
 
             Reminder currentReminder = reminder_list.get(position);
             System.out.println(currentReminder.getType());
@@ -435,9 +438,15 @@ public class ListViewFragment extends Fragment {
 
             TextView descText = (TextView) itemView.findViewById(R.id.item_textDesc);
             descText.setText(currentReminder.getDescription());
+            /**
+             * this is supposed to be from the dateTime instead
+             */
 
             TextView timeText = (TextView) itemView.findViewById(R.id.item_textTime);
-            timeText.setText("" + currentReminder.getTime());
+            timeText.setText("" + currentReminder.getFormatedDateAndTime());
+
+            //get calendar time and use
+            //String ful = new GregorianCalendar().getTimeInMillis() + reminderGet.getTime() * 1000;
 
             return itemView;
         }

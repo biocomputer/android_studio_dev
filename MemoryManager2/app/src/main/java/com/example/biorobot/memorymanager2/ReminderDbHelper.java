@@ -44,6 +44,7 @@ public class ReminderDbHelper extends SQLiteOpenHelper {
      *                            0 or 1. alarm);
      *
      *       note: time is now seconds so time = 1000 is one thousand seconds. It's not time of day yet.
+     *       this needs to be updated to use the calendar object instead.
      */
 
     @Override

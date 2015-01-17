@@ -54,16 +54,17 @@
         android:text="Time:"
         android:id="@+id/create_reminder_time"
         android:layout_below="@+id/create_reminder_make_desc"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="32dp" />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/create_reminder_make_time"
+        android:hint="Time to trigger?"
         android:layout_below="@+id/create_reminder_time"
-        android:layout_alignParentStart="true"
-        android:hint="What time do you want this to trigger?" />
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -79,17 +80,47 @@
         android:text="Alarm?"
         android:id="@+id/create_reminder_alarm"
         android:checked="false"
-        android:layout_below="@+id/create_reminder_time_button"
-        android:layout_alignEnd="@+id/create_reminder_desc"
-        android:layout_marginTop="43dp" />
+        android:layout_below="@+id/setDateButton"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="44dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TimeFixer"
+        android:text="Set Time"
         android:id="@+id/create_reminder_time_button"
+        android:layout_alignBottom="@+id/create_reminder_make_time"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/create_reminder_date"
+        android:hint="Date to trigger?"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/create_reminder_date_desc"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Date:"
+        android:id="@+id/create_reminder_date_desc"
+        android:layout_marginTop="37dp"
         android:layout_below="@+id/create_reminder_make_time"
         android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Date"
+        android:id="@+id/setDateButton"
+        android:layout_alignTop="@+id/create_reminder_date_desc"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

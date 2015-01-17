@@ -2,6 +2,7 @@ package com.example.biorobot.memorymanager2;
 
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Reminder {
@@ -9,15 +10,20 @@ public class Reminder {
 
     private String type;
     private String description;
+    /**
+     * save time as what.. calendar?
+     * DateTime value? <-- probably
+     * TimeStamp?
+     */
 
-    private int time;
+    private long time;
 
     //do set alarm is the checkbox
     private boolean doSetAlarm;
     //for internal use in the reminder
     private int reminderID;
 
-    public Reminder(String type, String description, int time, boolean isAlarm)
+    public Reminder(String type, String description, long time, boolean isAlarm)
     {
         super();
         this.type = type;
@@ -29,11 +35,11 @@ public class Reminder {
     }
 
 
-    public void setTime(int time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
-    public int getTime() { return time;}
+    public long getTime() { return time;}
 
     public String getDescription() {
         return description;
@@ -70,5 +76,12 @@ public class Reminder {
 
     public void setReminderID(int reminderID) {
         this.reminderID = reminderID;
+    }
+
+    public String getFormatedDateAndTime() {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis((long) this.time);
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return sf.format(c.getTime());
     }
 }

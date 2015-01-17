@@ -14,6 +14,10 @@ import android.widget.Toast;
 /**
  * Created by biorobot on 2014-11-21.
  */
+
+/**
+ * perhaps should be called ViewReminderFragment
+ */
 public class Event extends Fragment {
 
     //textviews and inputs from the other data for linking with xml.
@@ -76,9 +80,9 @@ public class Event extends Fragment {
 
             //it needs, however, to be fixed when the Reminder is created in the create fragment.
             //Apparently it can assign without a problem but cannot read it .toString()
-            Log.i("inside Event onCreateView. reminder.time()... is = ", Integer.toString(localReminder.getTime()) + "");
+            Log.i("inside Event onCreateView. reminder.time()... is = ", Long.toString(localReminder.getTime()) + "");
              //can't even Log.i the whole expression since it always will evaluate to null.. ?
-            String tempDataTime = Integer.toString(localReminder.getTime());
+            String tempDataTime = Long.toString(localReminder.getTime());
 
             //eventDataTime.setText(localReminder.getTime());
             eventDataTime.setText(tempDataTime);

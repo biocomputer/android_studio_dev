@@ -21,8 +21,4 @@ public final class ReminderContract {
 
     }
 
-    //private String type;
-    //private String description;
-    //private String time;
-
 }

@@ -25,7 +25,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Time: "
         android:id="@+id/item_textTime"
-        android:layout_below="@+id/item_textDesc"
+        android:layout_alignBottom="@+id/item_textDesc"
         android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
