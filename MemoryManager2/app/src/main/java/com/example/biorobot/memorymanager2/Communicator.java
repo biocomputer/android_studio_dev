@@ -7,5 +7,4 @@ public interface Communicator {
 
     public void transferReminder(Reminder data);
 
-    //public void readRemidner(Reminder data);
 }

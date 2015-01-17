@@ -15,10 +15,6 @@ import java.util.Calendar;
  */
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-    /**
-     * this is outside of the
-     * reminder and events and database??
-     */
 
     private int hourOfDay;
     private int minute;
@@ -29,9 +25,6 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
-        /**
-         * date?? in DateTimePicker?
-         */
 
         // Create a new instance of TimePickerDialog and return it
         return new TimePickerDialog(getActivity(), this, hour, minute,

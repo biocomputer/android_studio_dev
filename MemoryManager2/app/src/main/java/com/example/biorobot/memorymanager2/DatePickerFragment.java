@@ -12,10 +12,6 @@ import java.util.Calendar;
  * Created by biorobot on 2015-01-10.
  */
 
-/**
- * helper class
- */
-
 public class DatePickerFragment extends DialogFragment
     implements DatePickerDialog.OnDateSetListener {
 
@@ -32,7 +28,6 @@ public class DatePickerFragment extends DialogFragment
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        // Do something with the date chosen by the user
         if(this.getActivity() != null) {
             MainActivity activity = (MainActivity) this.getActivity();
             activity.onDateSet(view, year, month, day);

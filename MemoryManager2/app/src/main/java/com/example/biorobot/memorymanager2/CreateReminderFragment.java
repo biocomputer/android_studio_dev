@@ -39,7 +39,7 @@ public class CreateReminderFragment extends Fragment {
 
     Button addReminderButton, createReminderTimeButton, setDateButton;
 
-    //setting the button to which of the AB tests we are using..
+    //setting the button to which of the AB tests
     public int ABLayoutMode = 0;
 
     private void updateLayoutForABTest() {
@@ -65,9 +65,7 @@ public class CreateReminderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState == null) {
 
-            Log.i("now inside creaRemidnerFragment", "LAUNCHED!");
             createReminderView = (View) inflater.inflate(R.layout.create_reminder_fragment, container, false);
-            //linking the code with the xml for editing data values later..
 
             makeType = (EditText) createReminderView.findViewById(R.id.create_reminder_make_type);
             makeDesc = (EditText) createReminderView.findViewById(R.id.create_reminder_make_desc);
@@ -81,20 +79,7 @@ public class CreateReminderFragment extends Fragment {
 
             setDateButton = (Button) createReminderView.findViewById(R.id.setDateButton);
 
-            makeType.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    addReminderButton.setEnabled(!makeType.getText().toString().trim().isEmpty());
-                }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
 
             addReminderButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -118,16 +103,6 @@ public class CreateReminderFragment extends Fragment {
                         return;
                     }
 
-                    //Datatype check so we won't get empty string to convert to int == error
-//                    String timeText = makeTime.getText().toString().trim();
-//                    int time;
-//
-//                    if (timeText.length() < 0) {
-//                        time = Integer.parseInt(timeText);
-//                    }
-//                    else {
-//                        time = 0;
-//                    }
                     long time;
                     String timeString = makeTime.getText().toString();
                     String [] tokens = timeString.split(":");
@@ -145,8 +120,7 @@ public class CreateReminderFragment extends Fragment {
                     }
 
                     boolean isChecked = ((CheckBox) createReminderView.findViewById(R.id.create_reminder_alarm)).isChecked();
-                    //why doesn't this work. how do I make it add as int? Shouldn't it just be able to add since I changed the constructor to accept int??
-                                                                                                                                //this might filter it. From string to int..
+                                                                                                                            //this might filter it. From string to int..
                     Reminder reminder = new Reminder(
                             makeType.getText().toString().trim(),
                             makeDesc.getText().toString().trim(),
@@ -154,11 +128,8 @@ public class CreateReminderFragment extends Fragment {
                             isChecked
                     );
 
-                    /**
-                     * TODO: Needs to add isDoSetAlarm and set Reminder ID and such.
-                     */
+
                     Toast.makeText(getActivity(), "Your Reminder has been created!", Toast.LENGTH_LONG).show();
-                    //is this actually pushing the reminder? Yes.
                     Communicator comm = (Communicator) getActivity();
                     comm.transferReminder(reminder);
 
@@ -202,21 +173,6 @@ public class CreateReminderFragment extends Fragment {
                 }
             });
 
-
-            // get the current date
-            /*final Calendar c = Calendar.getInstance();
-            year = c.get(Calendar.YEAR);
-            month = c.get(Calendar.MONTH);
-            day = c.get(Calendar.DAY_OF_MONTH);
-
-            //display the current date
-            updateDisplay();
-
-            private void updateDisplay() {
-            this.dateDisplay.setText(
-                    new StringBuilder()
-            )
-        }*/
         }
         return createReminderView;
 

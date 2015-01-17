@@ -10,9 +10,6 @@ public interface EventCommunicator
 
     public void returnReminder(Reminder data);
 
-    /**
-     * reminder is preselected from listFragment to Event so doesn't need reminder data or position..
-     * Just needs the order to delete..
-     */
+
     public void deleteReminder();
 }

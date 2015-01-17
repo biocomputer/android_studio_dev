@@ -20,23 +20,22 @@ import android.widget.Toast;
  */
 public class Event extends Fragment {
 
-    //textviews and inputs from the other data for linking with xml.
 
     TextView eventDataType, eventDataDesc, eventDataTime;
 
-    //new for alarm build!
     CheckBox eventDataAlarm;
 
     String inputType, inputDesc, inputTime;
 
     Reminder localReminder;
+
     //communicator
     EventCommunicator commEvent;
 
     Button pushReminderButton;
     Button deleteReminderButton;
 
-    View testView; //for testing how to add things..
+    View testView;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -44,19 +43,12 @@ public class Event extends Fragment {
     }
 
     public void pullReminder(Reminder getReminder) {
-        //assigns the local Reminder variable
-        Log.i("We are INSIDE PULLREMINDER", "   --  Inside Event.java!");
-        Log.i("THE REMINDER IS :: ", getReminder.getType());
-
         localReminder = getReminder;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        /**
-         * added savedInstance state check for anti-clutter. Still in development.
-         * The goal is to
-         */
+
         if (savedInstanceState == null) {
 
             setRetainInstance(true);
@@ -64,8 +56,6 @@ public class Event extends Fragment {
 
             commEvent = (EventCommunicator) getActivity();
 
-            //links with activity
-            //commEvent = (EventCommunicator) getActivity();
 
             eventDataType = (TextView) testView.findViewById(R.id.eventDataType);
             eventDataDesc = (TextView) testView.findViewById(R.id.eventDataDesc);
@@ -74,25 +64,14 @@ public class Event extends Fragment {
 
             eventDataType.setText(localReminder.getType());
             eventDataDesc.setText(localReminder.getDescription());
-            //if this is nothing then there's a problem since it is now an int rather than string
-            //strings can be empty but integers can't.
-            //thus it generates a Rescource not found exception
 
-            //it needs, however, to be fixed when the Reminder is created in the create fragment.
-            //Apparently it can assign without a problem but cannot read it .toString()
-            Log.i("inside Event onCreateView. reminder.time()... is = ", Long.toString(localReminder.getTime()) + "");
-             //can't even Log.i the whole expression since it always will evaluate to null.. ?
+
             String tempDataTime = localReminder.getFormatedDateAndTime();
-            //problems with edit
+
             eventDataTime.setEnabled(false);
 
-            //eventDataTime.setText(localReminder.getTime());
             eventDataTime.setText(tempDataTime);
-            //actually it always assigns emtpy?
-            //always segfaults onClick for listItem. Okay it's because of time assignment is changed to
-            //The TimePicker rather than the EditText field.
 
-            //Nope that didn't work. It gets rescource not found exception all the time..
 
             pushReminderButton = (Button) testView.findViewById(R.id.pushChangeButton);
 
@@ -108,15 +87,11 @@ public class Event extends Fragment {
                             localReminder.getTime(),
                             eventDataAlarm.isChecked()
                     );
-                    //is this actually pushing the reminder? Yes.
-                    //Communicator comm = (Communicator) getActivity();
                     commEvent.returnReminder(localReminder);
 
                 }
             });
-            /**
-             * here is new functionality for deleting Reminders.
-             */
+
             deleteReminderButton = (Button) testView.findViewById(R.id.deleteButton);
             deleteReminderButton.setOnClickListener(new View.OnClickListener() {
                 @Override

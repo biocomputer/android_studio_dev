@@ -40,13 +40,12 @@ public class ListViewFragment extends Fragment {
      */
     ListView item_list;
     View itemView;
-    //make new reminder
+
     Button createReminderButton;
 
     Button clearButton;
 
-    //saves position when user clicks on a listitem.
-    //assigned to zero just to be sure.
+    //saves position when user clicks on a list item.
     int mPosition = 0;
 
     List<Reminder> reminder_list = new ArrayList<Reminder>();
@@ -55,89 +54,46 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        /**
-         * need to save communicator in saveinstancestate?
-         */
+
         comm = (Communicator) getActivity();
     }
 
     public void getReminder(Reminder reminderGet) {
         if (reminderGet.isDoSetAlarm() == true) {
 
-            Long time = new GregorianCalendar().getTimeInMillis() + reminderGet.getTime() * 1000;
-            Log.i("yo man get that time? ", time + "");
-            // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
-            // specified AlarmReceiver in the Intent. The onReceive() method of this class will execute when the broadcast from your alarm is received.
+            Long time = reminderGet.getTime();
             Intent intentAlarm = new Intent(getActivity(), Alarm.class);
 
-            // Get the Alarm Service.
             AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
 
-            // Set the alarm for a particular time.
             alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(getActivity(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
-            Toast.makeText(getActivity(), "5 seconds..", Toast.LENGTH_LONG).show();
 
-            /**
-             * can't make toasts and data changes in here? it's not a fragment or? it should trigger on listview fragment, or is this some kind of
-             * it's wiped every time?
-             *
-             * It should wipe everything that isn't saved in here every time??
-             */
-            /**
-             * TODO: use alarmManager here to set alarm with intent.
-             */
         }
-        else {
-            Log.i("inside getReminder communicator on the listView Side\n", "no alarm set!");
-        }
-        Log.i("inside reminder", reminderGet.getType());
+
         reminder_list.add(reminderGet);
     }
     public void replaceReminder(Reminder pushReminder) {
-        //"returns" a Reminder from the Event fragment by replacing the old one in the list
         reminder_list.set(mPosition, pushReminder);
 
-        Log.i("inside replaceReminder. What's the reminder? ", reminder_list.get(mPosition).getType());
     }
     public void removeReminder() {
-        //deletes the reminder at position
         reminder_list.remove(mPosition);
-        Log.i("inside removeReminder", "removed reminder at position: " + mPosition+"");
-        //need to do this still even as we now have SQL database?
         item_list.deferNotifyDataSetChanged();
-        //doesn't remove the listview item. its still an empty lisview item.
-        //needs to remove from database too.
         ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.execSQL("DELETE FROM Reminder WHERE reminderid = " + mPosition);
+        db.close();
     }
 
     @Override
     public void onPause() {
-        /**
-         * Inside here is the database runtime logic.
-         */
-        //super runs the original unedited class onPause() first, then we can run our special override code
         super.onPause();
-        Log.i("Inside onPause", "PAUSE");
-        //save those reminders in the database onPause so the app doesn't wipe the data onquit.
-        //data now lives on even if the app is shut down. Data also lives on for new versions of the app..
         ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
-        //create a reference to the database object..
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         db.execSQL("DELETE FROM Reminder;");
-        /**
-         * need to do this since we don't have a unique constraint. Otherwise the old Reminders would
-         * not be able to be stored back into the database.
-         */
 
-        //now we add all new reminders from the temporary list.
         for(int x = 0; x < reminder_list.size(); x++) {
-            /**
-             * Log everything in DB now that the old database is cleansed
-             */
-            //get reminder from the list, and divide up it's data for pushing to the database.
             Reminder r = reminder_list.get(x);
             ContentValues values = new ContentValues();
             values.put(ReminderEntry.COLUMN_NAME_REMINDER_ID, x);
@@ -150,7 +106,6 @@ public class ListViewFragment extends Fragment {
                         ReminderEntry.TABLE_NAME,
                         null,
                         values);
-                Log.v("inside try clause .. ", r.toString());
             } catch (Exception e) {
                 Log.e("reminder_save", e.getMessage());
             }
@@ -160,25 +115,15 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.i("Inside onResume", "RESUME");
         try
         {
-            if(reminder_list != null) {
-                //reminder_list.clear();
-            }
-            else {
+            if(reminder_list == null) {
                 reminder_list = new ArrayList<Reminder>();
             }
-            //Database needs to be onResume so it can load up the saved data.
+
             ReminderDbHelper mDbHelper = new ReminderDbHelper(getActivity());
-            //helper is the definition of the structure of the database..
             SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-            //defines which columns are read from the database.
-            //all columns are currently set to be read. This is formality to work with a database.
-            /**
-             * An alternative is
-             */
             String [] projection = {
                     ReminderEntry.COLUMN_NAME_TYPE,
                     ReminderEntry.COLUMN_NAME_DESCRIPTION,
@@ -187,12 +132,9 @@ public class ListViewFragment extends Fragment {
                     ReminderEntry.COLUMN_NAME_ALARM
             };
 
-            // reminder position in ascending order
             String sortOrder =
                     ReminderEntry.COLUMN_NAME_REMINDER_ID + " ASC";
 
-            //the query will look as such: SELECT type, description, time, reminderid FROM Reminder
-            //ORDER BY reminderid ASC
             Cursor c = db.query(
                     ReminderEntry.TABLE_NAME,
                     projection,
@@ -206,32 +148,19 @@ public class ListViewFragment extends Fragment {
             if(c.moveToFirst())
             {
                 do {
-                    //gets data from the database at the cursor location.
                     int typeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TYPE);
                     String type = c.getString(typeColIndex);
 
                     int descColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_DESCRIPTION);
                     String desc = c.getString(descColIndex);
-                    /**
-                     * there's problems here..
-                     * time variable is wrong and alarm too!
-                     * It saves desc properly.
-                     *
-                     * Maybe time isn't saved properly but it's more probable that
-                     * it doesn't load properly?
-                     */
+
 
                     int timeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TIME);
-                    //this was c.getString before but now we need int.
                     long time = c.getLong(timeColIndex);
 
                     int alarmColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_ALARM);
-                    //need to save as int 0 or 1? and then translate?
-                    /**
-                     * Alarm runs for -1 here in debug? Alarm was set to on i think..
-                     */
+
                     int valueAlarm = c.getInt(alarmColIndex);
-                    //just default to false.
                     boolean alarm = false;
 
                     if (valueAlarm == 0) {
@@ -252,38 +181,17 @@ public class ListViewFragment extends Fragment {
 
 
                     int reminderIdColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_REMINDER_ID);
-
-                    /**
-                     * TODO: Add id to reminder so we can see which reminder is where and it doesn't
-                     * add new reminder for no reason.
-                     */
-                    //cursor gets the id from the database. Id used formally to identify Reminders in the database.
-                    //Next up is to add as value in the Reminder.java class?
                     int reminderID = c.getInt(reminderIdColIndex);
 
-                    /**
-                     * The database has a id for every row, called key. Doesn't exist in the UI
-                     */
-
-                    //reminders have ID 1 2 3 4 depending on position in list. We don't want reminders that are
-                    //not in the list, so check for reminders that are not ID larger than the list.size()
                     if (reminderID >= reminder_list.size()) {
-                        /**
-                         * An alternative solution is to have an ID integer value in the Reminder class.
-                         * Now the ID is in the database. Everything works nice now however so maybe not needed.
-                         */
+
                         reminder_list.add(r);
                     }
-                    /**
-                     * How do we know that we want a reminder which is not already in the list?
-                     * we need a unique "divider"
-                     */
-                    //don't need this.. it didn't do anything.. delete?
-                    //item_list.deferNotifyDataSetChanged();
+
                 } while(c.moveToNext()); //runs while there are rows in the cursor..
 
                 c.close();
-                // coninute to the next row
+                // continue to the next row
             }
         } catch (Exception e) {
             Log.e("ListViewFragment_OnResume", e.getMessage());
@@ -291,13 +199,6 @@ public class ListViewFragment extends Fragment {
 
     }
 
-    /**
-     * onSaveInstanceState to handle orientation changes
-     *
-     * All it needs to save is the reminder_list
-     *
-     * counter == reminder_list
-     */
     @Override
     public void onSaveInstanceState(Bundle saveData) {
         super.onSaveInstanceState(saveData);
@@ -307,10 +208,8 @@ public class ListViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            //data assignment?
         }
         else {
-            //data loading??
         }
     }
 
@@ -377,9 +276,6 @@ public class ListViewFragment extends Fragment {
         return itemView;
     }
 
-    /**
-     * this class is for pushing every generated item xml to the list..
-     */
     private class MyListAdapter extends ArrayAdapter<Reminder> {
         public MyListAdapter() {
             super(getActivity(), R.layout.item_view, reminder_list);
@@ -405,9 +301,6 @@ public class ListViewFragment extends Fragment {
 
             TextView timeText = (TextView) itemView.findViewById(R.id.item_textTime);
             timeText.setText("" + currentReminder.getFormatedDateAndTime());
-
-            //get calendar time and use
-            //String ful = new GregorianCalendar().getTimeInMillis() + reminderGet.getTime() * 1000;
 
             return itemView;
         }

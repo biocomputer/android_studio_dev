@@ -30,9 +30,8 @@ public class MainActivity extends Activity implements Communicator,
     FragmentManager fragmentManager;
 
     // see https://developer.amazon.com/public/apis/manage/ab-testing/doc/a-b-testing-for-android-fire-os
-    // for more information
+    // for more information about amazon ab testing
 
-            //this is for SSHing to the webserver?
     public static final String AMAZON_PUBLIC_KEY = "43987f10f024480c8f6447607cf58b26";
     public static final String AMAZON_PRIVATE_KEY = "/TzvGgh+o0n69l93goJWmgorbEAzzQnaaYUI40AxxJs=";
 
@@ -49,21 +48,11 @@ public class MainActivity extends Activity implements Communicator,
 
         fragmentManager = getFragmentManager();
 
-        //fragment variables defined before transaction this time
+        //fragment variables defined before transaction
         fragmentListView = (ListViewFragment) fragmentManager.findFragmentById(R.id.list_view_layout);
 
-        //creating an eventFragment here since it works for listview fragment. This might solve the nullpointer exception.
         fragmentEvent = (Event) fragmentManager.findFragmentById(R.id.event_layout);
 
-        /**
-         * Fragment fragmentA = new FragmentA();
-         *getFragmentManager().beginTransaction()
-         *.replace(R.id.MainFrameLayout,fragmentA,"YOUR_TARGET_FRAGMENT_TAG")
-         *.addToBackStack("YOUR_SOURCE_FRAGMENT_TAG").commit();
-         *
-         * list:
-         * List<Fragment> allFragments = getSupportFragmentManager().getFragments();
-         */
 
         //A/B Testing
 
@@ -74,7 +63,6 @@ public class MainActivity extends Activity implements Communicator,
         eventClient = insightsInstance.getEventClient();
 
         ListViewFragment listFragment = new ListViewFragment();
-        //refers to the listFragment so it can be used seperately from the listFragment, which is pushed with the manager..
         fragmentListView = listFragment;
         getFragmentManager().beginTransaction().replace(R.id.main_layout, listFragment, "listFragTag")
                 //.addToBackStack("mainFragTag")
@@ -95,8 +83,7 @@ public class MainActivity extends Activity implements Communicator,
                                String reminderGroup = createReminderVariation.getVariableAsString("ReminderGroup", "1.0");
                                 ABTestLayoutMode = (int)Double.parseDouble(reminderGroup);
                             }
-                            //final int layoutMode = Integer.parseInt(createReminderVariation.getVariableAsString("ReminderGroup","1.0"));
-                            //ABTestLayoutMode = layoutMode;
+
                             Log.i("Got Layout From Amazon: ", Integer.toString(ABTestLayoutMode));
                         } catch(Exception ex) {
                             Log.e("Amazon.Insight.Callback", ex.getMessage());
@@ -174,9 +161,7 @@ public class MainActivity extends Activity implements Communicator,
     }
 
     public void returnReminder(Reminder pushReminder) {
-        Log.i("We are inside returnReminder", " GOGOGO ");
 
-        //position is now accessed locally.
         this.fragmentListView.replaceReminder(pushReminder);
 
         fragmentManager.beginTransaction()

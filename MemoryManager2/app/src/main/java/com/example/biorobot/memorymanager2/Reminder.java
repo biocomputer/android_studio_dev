@@ -10,11 +10,6 @@ public class Reminder {
 
     private String type;
     private String description;
-    /**
-     * save time as what.. calendar?
-     * DateTime value? <-- probably
-     * TimeStamp?
-     */
 
     private long time;
 
