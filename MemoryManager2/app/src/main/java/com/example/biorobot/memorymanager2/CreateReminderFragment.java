@@ -99,7 +99,24 @@ public class CreateReminderFragment extends Fragment {
             addReminderButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getActivity(), "Your Contact has been created!", Toast.LENGTH_LONG).show();
+
+
+                    //validate
+                    if(makeTime.getText().toString().equals("")) {
+                        Toast.makeText(getActivity(), "Please provide a time", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(makeDate.getText().toString().equals("")) {
+                        Toast.makeText(getActivity(), "Please provide a date", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(makeType.getText().toString().equals("")) {
+                        Toast.makeText(getActivity(), "Please provide a type", Toast.LENGTH_SHORT).show();
+                        return;
+                    }if(makeDesc.getText().toString().equals("")) {
+                        Toast.makeText(getActivity(), "Please provide a description", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
                     //Datatype check so we won't get empty string to convert to int == error
 //                    String timeText = makeTime.getText().toString().trim();
@@ -123,7 +140,7 @@ public class CreateReminderFragment extends Fragment {
                         time = currentCalendar.getTimeInMillis();
                     }
                     else {
-                        Toast.makeText(getActivity(), "Set date first", Toast.LENGTH_SHORT);
+                        Toast.makeText(getActivity(), "Set date first", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -140,7 +157,7 @@ public class CreateReminderFragment extends Fragment {
                     /**
                      * TODO: Needs to add isDoSetAlarm and set Reminder ID and such.
                      */
-
+                    Toast.makeText(getActivity(), "Your Reminder has been created!", Toast.LENGTH_LONG).show();
                     //is this actually pushing the reminder? Yes.
                     Communicator comm = (Communicator) getActivity();
                     comm.transferReminder(reminder);

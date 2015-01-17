@@ -63,25 +63,12 @@ public class ListViewFragment extends Fragment {
 
     public void getReminder(Reminder reminderGet) {
         if (reminderGet.isDoSetAlarm() == true) {
-            /**
-             * problem now is that the reminder needs value input in amount of seconds rather than a certain clock time.
-             */
-            Log.i("inside getReminder on listView side: -- :", "isDoSetAlarm is TRUE!");
-            /**
-             * this needs to link to the DatePicker and TimePicker instead of an int value.
-             */
+
             Long time = new GregorianCalendar().getTimeInMillis() + reminderGet.getTime() * 1000;
             Log.i("yo man get that time? ", time + "");
             // Create an Intent and set the class that will execute when the Alarm triggers. Here we have
             // specified AlarmReceiver in the Intent. The onReceive() method of this class will execute when the broadcast from your alarm is received.
             Intent intentAlarm = new Intent(getActivity(), Alarm.class);
-            /**
-             * refactor all this into onCreateView?
-             */
-
-            /**
-             * TODO: Fix up the bool isDoSetAlarm so it's not always false..
-             */
 
             // Get the Alarm Service.
             AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
@@ -236,7 +223,7 @@ public class ListViewFragment extends Fragment {
 
                     int timeColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_TIME);
                     //this was c.getString before but now we need int.
-                    int time = c.getInt(timeColIndex);
+                    long time = c.getLong(timeColIndex);
 
                     int alarmColIndex = c.getColumnIndex(ReminderEntry.COLUMN_NAME_ALARM);
                     //need to save as int 0 or 1? and then translate?
@@ -331,13 +318,8 @@ public class ListViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState == null)
         {
-            /**
-             * list refresh
-             */
             if (item_list != null) {
-                /**
-                 * just crap, does nothing..
-                 */
+
                 item_list.deferNotifyDataSetChanged();
             }
 
@@ -357,9 +339,7 @@ public class ListViewFragment extends Fragment {
             });
 
             clearButton.setOnClickListener(new View.OnClickListener() {
-                /**
-                 * this is the CLEAR BUTTON
-                 */
+
                 @Override
                 public void onClick(View view) {
                     try {
@@ -368,10 +348,6 @@ public class ListViewFragment extends Fragment {
 
                         db.execSQL("DELETE FROM Reminder;");
                         reminder_list.clear();
-                        /**
-                         * this doesn't work somehow. Clears list all the time?
-                         * Never clears onbuttonclick?
-                         */
 
                         item_list = populateListView(itemView);
                     }
@@ -384,18 +360,13 @@ public class ListViewFragment extends Fragment {
             item_list = populateListView(itemView);
             item_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                     /**
-                     * this is the LIST ITEM
-                     */
+
                     String toast_text = parent.getItemAtPosition(position).toString();
                     Toast.makeText(getActivity().getApplicationContext(), toast_text, Toast.LENGTH_LONG).show();
 
                     Log.v("inside ListViewFragment onItemClick. Position == ", position + "");
                     EventCommunicator eventComm = (EventCommunicator) getActivity();
 
-                    /**
-                     * need to get activity maybe?
-                     */
                     Reminder ful_reminder = reminder_list.get(position);
                     mPosition = position;
                     eventComm.readReminder(ful_reminder);
@@ -421,14 +392,6 @@ public class ListViewFragment extends Fragment {
             if (itemView == null) {
                 itemView = getActivity().getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
-            /**
-             * need to change it up so time now contains actual time, like a time object
-             * and this can of course be converted to String and then added as timeText.setText
-             * (currentReminder.getRealTimeObject().toString() where toString is Override or something
-             * or just + ""
-             *
-             * also time object needs to work properly.. or does it already do that?
-             */
 
             Reminder currentReminder = reminder_list.get(position);
             System.out.println(currentReminder.getType());
@@ -438,9 +401,7 @@ public class ListViewFragment extends Fragment {
 
             TextView descText = (TextView) itemView.findViewById(R.id.item_textDesc);
             descText.setText(currentReminder.getDescription());
-            /**
-             * this is supposed to be from the dateTime instead
-             */
+
 
             TextView timeText = (TextView) itemView.findViewById(R.id.item_textTime);
             timeText.setText("" + currentReminder.getFormatedDateAndTime());
@@ -451,15 +412,8 @@ public class ListViewFragment extends Fragment {
             return itemView;
         }
     }
-    /**
-     * now we call the listview
-     *
-     *can't populate like this anymore. need to have an update method instead..
-     */
     private ListView populateListView(View itemView) {
-        /**
-         * this is probably outdated
-         */
+
         ArrayAdapter<Reminder> adapter = new MyListAdapter();
         ListView list = (ListView) itemView.findViewById(R.id.eventListView);
         list.setAdapter(adapter);

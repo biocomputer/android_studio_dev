@@ -82,7 +82,9 @@ public class Event extends Fragment {
             //Apparently it can assign without a problem but cannot read it .toString()
             Log.i("inside Event onCreateView. reminder.time()... is = ", Long.toString(localReminder.getTime()) + "");
              //can't even Log.i the whole expression since it always will evaluate to null.. ?
-            String tempDataTime = Long.toString(localReminder.getTime());
+            String tempDataTime = localReminder.getFormatedDateAndTime();
+            //problems with edit
+            eventDataTime.setEnabled(false);
 
             //eventDataTime.setText(localReminder.getTime());
             eventDataTime.setText(tempDataTime);
@@ -103,7 +105,7 @@ public class Event extends Fragment {
                     localReminder = new Reminder(
                             eventDataType.getText().toString().trim(),
                             eventDataDesc.getText().toString().trim(),
-                            Integer.parseInt(eventDataTime.getText().toString().trim()),
+                            localReminder.getTime(),
                             eventDataAlarm.isChecked()
                     );
                     //is this actually pushing the reminder? Yes.
